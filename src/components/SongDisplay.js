@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-// import { Web3Storage } from "web3.storage";
+import { Web3Storage } from "web3.storage";
 
 export class SongDisplay extends Component {
   constructor(props) {
@@ -26,9 +26,9 @@ export class SongDisplay extends Component {
   };
 
   // web3storage
-  // makeStorageClient = () => {
-  //   return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
-  // };
+  makeStorageClient = () => {
+    return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
+  };
 
   retrieveFiles = async (cid) => {
     const client = makeStorageClient();
