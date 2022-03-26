@@ -1,26 +1,90 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Auth from "./components/Auth";
 import Offline from "./components/Offline";
-import Land from "./components/Land";
 import Loading from "./components/Loading";
+import artwork from "./assets/knack.png";
+import contractMeta from "./contracts/Knack.json";
+import { create } from "ipfs-http-client";
+import Web3 from "web3";
+// import { Web3Storage } from "web3.storage";
+import contract from "truffle-contract";
+import { toast } from "react-toastify";
+import Listener from "./components/Listener";
+import Artist from "./components/Artist";
 
 export class App extends Component {
   constructor(props) {
     super(props);
 
+    this.web3 = new Web3(
+      Web3.givenProvider || process.env.REACT_APP_GANACHECLI
+    );
+    this.contract = contract(contractMeta);
+    this.contract.setProvider(this.web3.currentProvider);
     this.state = {
       loading: true,
-      userExists: false,
+      username: "",
+      account: "",
+      web3storage: "",
+      type: "",
+      choice: "1",
     };
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      // check if user authenticated
-      this.setState({ loading: false, userExists: false });
-    }, 1000);
+    this.loadBlockchain().then(() => toast("Blockchain loaded"));
+    this.loadIPFS().then(() => toast("loaded IPFS"));
+    // this.loadWeb3Storage().then(() => toast("Loaded web3.storage"));
+    this.loginUser().then(() => console.log("__LOGIN__"));
   }
+
+  async loadIPFS() {
+    const connection = create({
+      host: "ipfs.infura.io",
+      port: "5001",
+      protocol: "https",
+    });
+    this.setState({ ipfs: connection });
+  }
+
+  async loadBlockchain() {
+    const accounts = await this.web3.eth.getAccounts();
+    this.setState({ account: accounts[0] });
+  }
+
+  // makeStorageClient = () => {
+  //   return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
+  // };
+
+  // async loadWeb3Storage() {
+  //   const connection = this.makeStorageClient();
+  //   this.setState({ web3storage: connection });
+  // }
+
+  loginUser = async () => {
+    let val = "0";
+    const contractInstance = await this.contract.deployed();
+    await contractInstance.checkUser({ from: this.state.account }).then((x) => {
+      val = x.toString();
+    });
+    this.setState({ type: val, loading: false });
+  };
+
+  registerUser = async (e) => {
+    // e.preventDefault();
+    // toast("Registering");
+    // this.setState({ loading: true }, async () => {
+    const contractInstance = await this.contract.deployed();
+    if (this.state.choice === "1")
+      await contractInstance
+        .addNewArtist(this.state.username, { from: this.state.account })
+        .then(() => this.loginUser());
+    if (this.state.choice === "2")
+      await contractInstance
+        .addNewAudience(this.state.username, { from: this.state.account })
+        .then(() => this.loginUser());
+    // });
+  };
 
   render() {
     if (!navigator.onLine) {
@@ -29,10 +93,41 @@ export class App extends Component {
     if (this.state.loading) {
       return <Loading />;
     }
-    if (this.state.userExists) {
-      return <Land />;
+    if (this.state.type === "0") {
+      return (
+        <div id="registration" className="app d-flex">
+          <div className="col-0 col-md-7 d-flex justify-content-center align-items-center">
+            <img src={artwork} alt="artwork" className="w-100" />
+          </div>
+          <form
+            onSubmit={this.registerUser}
+            className="col-12 col-md-5 offset-md- d-flex flex-column justify-content-center p-4"
+          >
+            <div className="mb-3 d-flex">
+              <h1 className="text-white text-" id="knack__heading">
+                Knack
+              </h1>
+            </div>
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Username"
+                onChange={(evt) =>
+                  this.setState({ username: evt.target.value })
+                }
+              />
+            </div>
+            <div className="mb-3 d-flex justify-content-between">
+              <button className="btn btn-dark">Register</button>
+            </div>
+          </form>
+        </div>
+      );
+    } else if (this.state.type === "1") {
+      return <Artist />;
     } else {
-      return <Auth />;
+      return <Listener />;
     }
   }
 }
