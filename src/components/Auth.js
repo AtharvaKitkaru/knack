@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import artwork from "../assets/knack.png";
+import "./Auth.scss";
 
 export class Auth extends Component {
   constructor(props) {
@@ -24,7 +25,7 @@ export class Auth extends Component {
 
   render() {
     return (
-      <div id="app" className="d-flex">
+      <div id="auth" className="app d-flex">
         <div className="col-0 col-md-7 d-flex justify-content-center align-items-center">
           <img src={artwork} alt="artwork" className="w-100" />
         </div>

@@ -1,0 +1,11 @@
+#Land {
+  display: flex;
+  flex-direction: column;
+  header {
+    // background-color: lightblue;
+    padding: 1rem;
+  }
+  main {
+    flex-grow: 1;
+  }
+}

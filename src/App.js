@@ -18,8 +18,8 @@ export class App extends Component {
   componentDidMount() {
     setTimeout(() => {
       // check if user authenticated
-      this.setState({ loading: false, userExists: true });
-    }, 3000);
+      this.setState({ loading: false, userExists: false });
+    }, 1000);
   }
 
   render() {
