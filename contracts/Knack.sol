@@ -204,7 +204,7 @@ contract Knack {
         );
     }
 
-    // transfer ownership
+    // support artist by donation
     event artistDonated(string artistName, string listenerName, uint256 amount);
 
     function donateArtist(string memory artistName) public payable {
@@ -212,7 +212,10 @@ contract Knack {
             identifyUser[msg.sender] == UserType.LISTENER,
             "Not a listener profile."
         );
-        require(msg.sender.balance > msg.value, "Insufficient balance.");
+        require(
+            msg.sender.balance > msg.value,
+            "Insufficient balance to proceed."
+        );
 
         getArtistAddress[artistName].transfer(msg.value);
 
