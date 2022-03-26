@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 export class AddSong extends Component {
   constructor(props) {
     super(props);
-    this.web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
+    this.web3 = new Web3(
+      Web3.givenProvider || process.env.REACT_APP_GANACHECLI
+    );
     this.state = {
       name: "",
       genre: "",

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import AddSong from "./AddSong";
 import SongDisplay from "./SongDisplay";
 
 export class Artist extends Component {
