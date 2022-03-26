@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Web3 from "web3";
 
 export class AddSong extends Component {
   constructor(props) {

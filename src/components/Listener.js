@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Loading from "./Loading";
 import SongDisplay from "./SongDisplay";
+import Web3 from "web3";
 
 export class Listener extends Component {
   constructor(props) {
