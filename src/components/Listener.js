@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Loading from "./Loading";
 import SongDisplay from "./SongDisplay";
 import Web3 from "web3";
+import { toast } from "react-toastify";
 
 export class Listener extends Component {
   constructor(props) {
@@ -23,11 +24,9 @@ export class Listener extends Component {
 
   componentDidMount() {
     this.loadStore().then(() => {
-      console.log("Loaded Store");
       this.loadListenerDetails().then(() => {
-        console.log("Loaded Listener's Details");
         this.loadSongDetails().then(() => {
-          console.log("Loaded Songs");
+          toast.success("Fetched listener's data");
         });
       });
     });
@@ -111,7 +110,7 @@ export class Listener extends Component {
           window.location.reload();
         });
     }
-    console.log("Submitted");
+    toast("Published");
   };
 
   render() {
@@ -119,14 +118,14 @@ export class Listener extends Component {
       return <Loading />;
     } else {
       return (
-        <div style={styles.main}>
-          <div style={styles.info}>
+        <div>
+          <div>
             <h2>{this.state.name}</h2>
             <h3> listener ID : {this.state.listenerID} </h3>
           </div>
-          <div style={styles.area}>
-            <div style={styles.library}>
-              <h3 style={{ textAlign: "center" }}>Library</h3>
+          <div>
+            <div>
+              <h3>Library</h3>
               {this.state.library.map((item, i) => (
                 <SongDisplay
                   type={"listener"}
@@ -139,8 +138,8 @@ export class Listener extends Component {
                 />
               ))}
             </div>
-            <div style={styles.store}>
-              <h3 style={{ textAlign: "center" }}>Store</h3>
+            <div>
+              <h3>Store</h3>
               {this.state.store.map((item, i) => (
                 <SongDisplay
                   contract={this.props.contract}
@@ -160,12 +159,11 @@ export class Listener extends Component {
           </div>
           <div>
             <form>
-              <div style={styles.form}>
-                <h3 style={{ textAlign: "center" }}>Sponsor Artist</h3>
+              <div>
+                <h3>Sponsor Artist</h3>
                 <input
                   type="text"
                   placeholder="Artist Username"
-                  style={styles.textInput}
                   value={this.state.supportArtistUsername}
                   required
                   onChange={(x) => {
@@ -175,7 +173,6 @@ export class Listener extends Component {
                 <input
                   type="text"
                   placeholder="Amount"
-                  style={styles.textInput}
                   value={this.state.donation}
                   required
                   onChange={(x) => {
@@ -185,7 +182,6 @@ export class Listener extends Component {
                 <input
                   type="submit"
                   onClick={this.onSubmitClick}
-                  style={styles.button}
                   value="Donate"
                 />
               </div>

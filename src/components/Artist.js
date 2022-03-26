@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { toast } from "react-toastify";
 import AddSong from "./AddSong";
 import SongDisplay from "./SongDisplay";
 
@@ -18,9 +19,8 @@ export class Artist extends Component {
 
   componentDidMount() {
     this.loadArtistDetails().then(() => {
-      toast("Artist details fetched");
       this.loadSongDetails().then(() => {
-        console.log("Artist's songs fetched");
+        toast.success("Fetched artist's data");
       });
     });
   }
@@ -58,7 +58,7 @@ export class Artist extends Component {
       });
       this.state.popularity += parseInt(songDetails[5].toString());
     }
-    console.log(songInfoList);
+    // console.log(songInfoList);
     this.setState({ songs: songInfoList });
   };
 

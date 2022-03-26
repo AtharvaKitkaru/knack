@@ -32,9 +32,11 @@ export class AddSong extends Component {
     event.preventDefault();
     if (this.state.buffer) {
       this.setState({ loading: true });
-      const file = await this.props.ipfs.add(this.state.buffer);
-      const songHash = file["path"];
+      // const file = await this.props.ipfs.add(this.state.buffer);
+      // const songHash = file["path"];
+      const songHash = await this.props.web3storage.put(this.state.buffer);
       this.setState({ hash: songHash });
+
       const contractInstance = await this.props.contract.deployed();
       await contractInstance
         .addSong(

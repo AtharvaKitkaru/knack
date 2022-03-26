@@ -7,10 +7,11 @@ import contractMeta from "./contracts/Knack.json";
 import { create } from "ipfs-http-client";
 import Web3 from "web3";
 // import { Web3Storage } from "web3.storage";
-import contract from "truffle-contract";
+import contract from "@truffle/contract";
 import { toast } from "react-toastify";
 import Listener from "./components/Listener";
 import Artist from "./components/Artist";
+import "./App.scss";
 
 export class App extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ export class App extends Component {
 
   componentDidMount() {
     this.loadBlockchain().then(() => toast("Blockchain loaded"));
-    this.loadIPFS().then(() => toast("loaded IPFS"));
+    // this.loadIPFS().then(() => toast("loaded IPFS"));
     // this.loadWeb3Storage().then(() => toast("Loaded web3.storage"));
     this.loginUser().then(() => console.log("__LOGIN__"));
   }

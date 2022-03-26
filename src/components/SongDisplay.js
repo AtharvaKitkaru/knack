@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+// import { Web3Storage } from "web3.storage";
 
 export class SongDisplay extends Component {
   constructor(props) {
@@ -22,6 +23,28 @@ export class SongDisplay extends Component {
   loadSong = async () => {
     let audio_src = "https://ipfs.infura.io/ipfs/" + this.props.hash;
     this.setState({ audio: new Audio(audio_src) });
+  };
+
+  // web3storage
+  // makeStorageClient = () => {
+  //   return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
+  // };
+
+  retrieveFiles = async (cid) => {
+    const client = makeStorageClient();
+    const res = await client.get(cid);
+    console.log(`Got a response! [${res.status}] ${res.statusText}`);
+    if (!res.ok) {
+      throw new Error(
+        `failed to get ${cid} - [${res.status}] ${res.statusText}`
+      );
+    }
+
+    // unpack File objects from the response
+    const files = await res.files();
+    for (const file of files) {
+      console.log(`${file.cid} -- ${file.path} -- ${file.size}`);
+    }
   };
 
   playSong = async () => {
@@ -52,7 +75,8 @@ export class SongDisplay extends Component {
       );
     else if (this.props.type === "listener")
       return (
-        <div style={!this.state.playing ? styles.card : styles.cardHiglight}>
+        <div>
+          {/* playing */}
           <p>{this.props.name}</p>
           <p>{this.props.genre}</p>
           <p>{this.props.artist}</p>
@@ -66,6 +90,7 @@ export class SongDisplay extends Component {
     else
       return (
         <div>
+          {/* not playing */}
           <p>{this.props.name}</p>
           <p>{this.props.genre}</p>
           <p>{this.props.artist}</p>
