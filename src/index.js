@@ -32,6 +32,7 @@ ReactDOM.render(
       pauseOnFocusLoss
       draggable
       pauseOnHover
+      theme="dark"
     />
   </React.StrictMode>,
   document.getElementById("knack")
