@@ -32,14 +32,20 @@ export class App extends Component {
   }
 
   componentDidMount() {
-    this.loadBlockchain().then(() => toast.success("Blockchain loaded"));
-    this.loadWeb3Storage().then(() => toast.success("Loaded Web3.Storage"));
-    this.loginUser().then(() => console.log("loginUser"));
+    this.loadBlockchain().then(() => {
+      // toast.success("Blockchain loaded");
+    });
+    this.loadWeb3Storage().then(() => {
+      // toast.success("Loaded Web3.Storage");
+    });
+    this.loginUser().then(() => {
+      // console.log("loginUser");
+    });
   }
 
   async loadBlockchain() {
     const accounts = await this.web3.eth.requestAccounts();
-    console.log(accounts);
+    // console.log(accounts);
     this.setState({ account: accounts[0] });
   }
 
@@ -63,9 +69,14 @@ export class App extends Component {
 
   registerUser = async (e) => {
     e.preventDefault();
+    // add checks
     toast.info("Registering");
     this.setState({ loading: true }, async () => {
-      console.log("register requested", this.state.account);
+      console.log(
+        "register requested",
+        this.state.account,
+        this.state.username
+      );
       const contractInstance = await this.contract.deployed();
       if (this.state.choice === "1")
         await contractInstance
@@ -137,9 +148,25 @@ export class App extends Component {
         </div>
       );
     } else if (this.state.type === "1") {
-      return <Artist />;
+      return (
+        <Artist
+          username={this.state.username}
+          contract={this.contract}
+          account={this.state.account}
+          web3storage={this.state.web3storage}
+          type={this.state.type}
+        />
+      );
     } else {
-      return <Listener />;
+      return (
+        <Listener
+          username={this.state.username}
+          contract={this.contract}
+          account={this.state.account}
+          web3storage={this.state.web3storage}
+          type={this.state.type}
+        />
+      );
     }
   }
 }

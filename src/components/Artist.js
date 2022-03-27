@@ -2,11 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import AddSong from "./AddSong";
+import Player from "./Player";
 import SongDisplay from "./SongDisplay";
+import "./Artist.scss";
 
 export class Artist extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       name: "",
       artistID: "",
@@ -20,7 +23,7 @@ export class Artist extends Component {
   componentDidMount() {
     this.loadArtistDetails().then(() => {
       this.loadSongDetails().then(() => {
-        toast.success("Fetched artist's data");
+        // toast.success(`Welcome ${this.state.name}! 🎤`);
       });
     });
   }
@@ -62,48 +65,32 @@ export class Artist extends Component {
     this.setState({ songs: songInfoList });
   };
 
-  openForm = () => {
-    this.setState({ form: true });
-  };
-
-  closeForm = () => {
-    this.setState({ form: false });
-  };
-
   render() {
     return (
-      <div>
-        <p>Artist</p>
-        <div>
-          <div>
-            <h1>{this.state.name}</h1>
-            <h3> Artist ID : {this.state.artistID} </h3>
-            <h3> Popularity : {this.state.popularity} </h3>
+      <div id="artist" className="app d-flex flex-column container-fluid">
+        <header>
+          <h1>Knack</h1>
+        </header>
+        <main className="d-flex flex-grow-1">
+          {/* <div className="col">
+            <p>analytics</p>
+          </div> */}
+          <div className="col">
+            <p>search</p>
           </div>
-          <div>
-            {this.state.songs.map((item, i) => (
-              <SongDisplay
-                type={"artist"}
-                name={item.name}
-                genre={item.genre}
-                cost={item.cost}
-                likes={item.timesPurchased}
-                hash={item.hash}
-                key={i}
-              />
-            ))}
+          <div className="col-3">
+            <AddSong
+              username={this.props.username}
+              contract={this.props.contract}
+              account={this.props.account}
+              web3storage={this.props.web3storage}
+              type={this.props.type}
+            />
           </div>
-          <h1>
-            <button onClick={this.openForm}>open form</button>
-          </h1>
-          <AddSong
-            contract={this.props.contract}
-            ipfs={this.props.ipfs}
-            account={this.props.account}
-            form={this.state.form}
-            closeForm={this.closeForm}
-          />
-        </div>
+        </main>
+        <footer>
+          <Player />
+        </footer>
       </div>
     );
   }
