@@ -31,7 +31,7 @@ export class SongDisplay extends Component {
   };
 
   retrieveFiles = async (cid) => {
-    const client = makeStorageClient();
+    const client = this.makeStorageClient();
     const res = await client.get(cid);
     console.log(`Got a response! [${res.status}] ${res.statusText}`);
     if (!res.ok) {
