@@ -4,7 +4,7 @@ Music is known to be effective for mood improvement. It has the power to change 
 ## Our Solution:
 A blockchain-based decentralized music streaming platform to connect music enthusiasts directly to independent music artists. The artists can use this platform to share their music with greater freedom while ensuring ownership and avoiding duplication of their music. People can listen to their favourite songs and support the artists by making micropayments through our custom crypto tokens.
 ## Architecture:
-
+![Untitled design](https://user-images.githubusercontent.com/53979947/160265658-1ced9b83-712c-40b0-ba4e-d75be6b9ff8c.png)
 ## Features implemented:
 
 ## Technology Stack:
