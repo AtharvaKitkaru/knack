@@ -6,7 +6,10 @@ A blockchain-based decentralized music streaming platform to connect music enthu
 ## Architecture:
 ![Untitled design](https://user-images.githubusercontent.com/53979947/160265658-1ced9b83-712c-40b0-ba4e-d75be6b9ff8c.png)
 ## Features implemented:
-
+1. Recommendation of music (if a user searches ‘gaye’, results should be udd gaye and other songs with ‘Gaye’ in their names) (youtube music)
+2. Identification of music (via smart contracts/NFTs)
+3. Streaming the music uploaded by the artist
+4. Artist revenue generation
 ## Technology Stack:
 1. React.js
 2. Node.js
