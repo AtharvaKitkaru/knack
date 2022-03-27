@@ -4,6 +4,7 @@ import Loading from "./Loading";
 import SongDisplay from "./SongDisplay";
 import Web3 from "web3";
 import { toast } from "react-toastify";
+import "./Listener.scss";
 
 export class Listener extends Component {
   constructor(props) {
@@ -17,8 +18,11 @@ export class Listener extends Component {
       store: [],
       library: [],
       songsMapping: {},
+      query: "",
       supportArtistUsername: "",
       donation: "",
+      loading: true,
+      view: "Library",
     };
   }
 
@@ -26,7 +30,9 @@ export class Listener extends Component {
     this.loadStore().then(() => {
       this.loadListenerDetails().then(() => {
         this.loadSongDetails().then(() => {
-          toast.success("Fetched listener's data");
+          this.setState({ loading: false }, () => {
+            toast.success("Fetched listener's data");
+          });
         });
       });
     });
@@ -118,11 +124,166 @@ export class Listener extends Component {
       return <Loading />;
     } else {
       return (
-        <div>
-          <div>
-            <h2>{this.state.name}</h2>
-            <h3> listener ID : {this.state.listenerID} </h3>
-          </div>
+        <div id="listener" className="app d-flex flex-column container-fluid">
+          <header className="d-flex justify-content-between align-items-center">
+            <h1>Knack</h1>
+            <p>
+              <b>View: </b>
+              {this.state.view === "Library" ? "Library" : "Store"}
+            </p>
+            <p>
+              <span>Songs owned 🎧: </span>
+              <span>
+                {/* {this.state.songsMapping && this.state.songsMapping.length} */}
+              </span>
+            </p>
+          </header>
+          <main className="d-flex flex-grow-1">
+            <div className="col-8 d-flex flex-column align-items-center">
+              <input
+                type="search"
+                name="query"
+                id="query"
+                className="form-control w-50 text-center mb-4"
+                placeholder="Search a published song"
+                onChange={(e) => this.setState({ query: e.target.value })}
+              />
+              {this.state.view === "Library" ? (
+                <div>
+                  {this.state.library
+                    .filter((song) => {
+                      let name = song.name.toLowerCase();
+                      let query = this.state.query.toLowerCase();
+                      return name.includes(query);
+                    })
+                    .map((song) => (
+                      <div
+                        class="card song w-75 bg-transparent mb-4 border-0 shadow overflow-hidden"
+                        key={song.hash}
+                      >
+                        <p
+                          style={{ fontWeight: "bold", fontSize: "large" }}
+                          class="card-header bg- "
+                        >
+                          {song.name}
+                        </p>
+                        <div class="card-body">
+                          <p class="card-text">
+                            <b>Genre: </b>
+                            {song.genre}
+                          </p>
+                          <p class="card-text">
+                            <b>Price: </b>
+                            {this.web3.utils.fromWei(song.cost, "milliether")}
+                          </p>
+                          <p className="card-text">
+                            <b>Artist: </b>
+                            {song.artist}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              console.log("buy");
+                            }}
+                            class="btn btn-primary"
+                          >
+                            Play
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div>
+                  {this.state.store
+                    .filter((song) => {
+                      let name = song.name.toLowerCase();
+                      let query = this.state.query.toLowerCase();
+                      return name.includes(query);
+                    })
+                    .map((song) => (
+                      <div
+                        class="card song w-75 bg-transparent mb-4 border-0 shadow overflow-hidden"
+                        key={song.hash}
+                      >
+                        <p
+                          style={{ fontWeight: "bold", fontSize: "large" }}
+                          class="card-header bg- "
+                        >
+                          {song.name}
+                        </p>
+                        <div class="card-body">
+                          <p class="card-text">
+                            <b>Genre: </b>
+                            {song.genre}
+                          </p>
+                          <p class="card-text">
+                            <b>Price: </b>
+                            {this.web3.utils.fromWei(song.cost, "milliether")}
+                          </p>
+                          <p className="card-text">
+                            <b>Artist: </b>
+                            {song.artist}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              console.log("buy");
+                            }}
+                            class="btn btn-primary"
+                          >
+                            Buy 💰
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+            <form>
+              <div>
+                <h3>Sponsor Artist</h3>
+                <input
+                  type="text"
+                  placeholder="Artist Username"
+                  value={this.state.supportArtistUsername}
+                  required
+                  onChange={(x) => {
+                    this.setState({ supportArtistUsername: x.target.value });
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Amount"
+                  value={this.state.donation}
+                  required
+                  onChange={(x) => {
+                    this.setState({ donation: x.target.value });
+                  }}
+                />
+                <input
+                  type="submit"
+                  onClick={this.onSubmitClick}
+                  value="Donate"
+                />
+              </div>
+            </form>
+          </main>
+          <footer id="__play">
+            <button
+              className="btn"
+              onClick={() => {
+                {
+                  this.state.playing
+                    ? this.state.audio.pause()
+                    : this.state.audio.play();
+                }
+              }}
+            >
+              {this.state.playing ? "Pause" : "Play"}
+            </button>
+          </footer>
+
           <div>
             <div>
               <h3>Library</h3>
@@ -156,36 +317,6 @@ export class Listener extends Component {
                 />
               ))}
             </div>
-          </div>
-          <div>
-            <form>
-              <div>
-                <h3>Sponsor Artist</h3>
-                <input
-                  type="text"
-                  placeholder="Artist Username"
-                  value={this.state.supportArtistUsername}
-                  required
-                  onChange={(x) => {
-                    this.setState({ supportArtistUsername: x.target.value });
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Amount"
-                  value={this.state.donation}
-                  required
-                  onChange={(x) => {
-                    this.setState({ donation: x.target.value });
-                  }}
-                />
-                <input
-                  type="submit"
-                  onClick={this.onSubmitClick}
-                  value="Donate"
-                />
-              </div>
-            </form>
           </div>
         </div>
       );

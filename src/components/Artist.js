@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import AddSong from "./AddSong";
-import Player from "./Player";
 import SongDisplay from "./SongDisplay";
 import "./Artist.scss";
 import Web3 from "web3";
@@ -21,6 +20,8 @@ export class Artist extends Component {
       songs: [],
       query: "",
       form: false,
+      audio: null,
+      playing: false,
     };
   }
 
@@ -48,6 +49,44 @@ export class Artist extends Component {
     });
   };
 
+  playAudio = (url) => {
+    // let audioTag = <audio src={url} autoplay></audio>;
+    window.open(url, "_blank");
+    toast.success("Audio loaded");
+  };
+
+  // playAudio = async (cid) => {
+  //   const client = this.props.web3storage;
+  //   const res = await client.get(cid);
+  //   console.log(`Got a response! [${res.status}] ${res.statusText}`);
+  //   if (!res.ok) {
+  //     throw new Error(
+  //       `failed to get ${cid} - [${res.status}] ${res.statusText}`
+  //     );
+  //   }
+
+  //   // unpack File objects from the response
+  //   const files = await res.files();
+  //   console.log(files);
+  //   const reader = new FileReader();
+  //   reader.onload = (e) => {
+  //     let src = e.target.result;
+  //     console.log(e.target);
+  //     this.setState({ audio: new Audio(src) }, () => this.state.audio.play());
+  //   };
+  // reader.addEventListener("load", (event) => {
+  //   // let src = event.target.result;
+  //   let src = `http://${.cid}.ipfs.dweb.link`;
+  //   console.log("src: ", src);
+  // });
+  // reader.readAsDataURL(file);
+  // for (const file of files) {
+  //   console.log(file);
+  //   console.log(`http://${file.cid}.ipfs.dweb.link/${file.name}`);
+  //   console.log(`${file.cid} -- ${file.path} -- ${file.size}`);
+  // }
+  // };
+
   loadSongDetails = async () => {
     const contractInstance = await this.props.contract.deployed();
     let songInfoList = [];
@@ -72,19 +111,23 @@ export class Artist extends Component {
   render() {
     return (
       <div id="artist" className="app d-flex flex-column container-fluid">
-        <header>
+        <header className="d-flex justify-content-between align-items-center">
           <h1>Knack</h1>
+          <p>
+            <span>Popularity 💟: </span>
+            <span>{this.state.popularity}</span>
+          </p>
         </header>
         <main className="d-flex flex-grow-1">
           {/* <div className="col">
             <p>analytics</p>
           </div> */}
-          <div className="col">
+          <div className="col-8 d-flex flex-column align-items-center">
             <input
               type="search"
               name="query"
               id="query"
-              className="form-control w-50 text-center"
+              className="form-control w-50 text-center mb-4"
               placeholder="Search a published song"
               onChange={(e) => this.setState({ query: e.target.value })}
             />
@@ -96,11 +139,39 @@ export class Artist extends Component {
                 return name.includes(query);
               })
               .map((song) => (
-                <div className="song" key={song.hash}>
-                  <p>{song.name}</p>
-                  <p>{song.genre}</p>
-                  <p>{this.web3.utils.fromWei(song.cost, "milliether")}</p>
-                  <p>{song.timesPurchased}</p>
+                <div
+                  class="card song w-75 bg-transparent mb-4 border-0 shadow overflow-hidden"
+                  key={song.hash}
+                >
+                  <p
+                    style={{ fontWeight: "bold", fontSize: "large" }}
+                    class="card-header bg- "
+                  >
+                    {song.name}
+                  </p>
+                  <div class="card-body">
+                    <p class="card-text">
+                      <b>Genre: </b>
+                      {song.genre}
+                    </p>
+                    <p class="card-text">
+                      <b>Price: </b>
+                      {this.web3.utils.fromWei(song.cost, "milliether")}
+                    </p>
+                    <p className="card-text">
+                      <b>Times purchased: </b>
+                      {song.timesPurchased}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        this.playAudio(`http://${song.hash}.ipfs.dweb.link`);
+                      }}
+                      class="btn btn-primary"
+                    >
+                      Play 🎶
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>
@@ -114,8 +185,19 @@ export class Artist extends Component {
             />
           </div>
         </main>
-        <footer>
-          <Player />
+        <footer id="__play">
+          <button
+            className="btn"
+            onClick={() => {
+              {
+                this.state.playing
+                  ? this.state.audio.pause()
+                  : this.state.audio.play();
+              }
+            }}
+          >
+            {this.state.playing ? "Pause" : "Play"}
+          </button>
         </footer>
       </div>
     );

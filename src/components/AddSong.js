@@ -25,6 +25,7 @@ export class AddSong extends Component {
   //     console.log("uploading files with cid:", cid);
   //   };
 
+  //   // const toastId = React.useRef(null);
   //   // when each chunk is stored, update the percentage complete and display
   //   const totalSize = files.map((f) => f.size).reduce((a, b) => a + b, 0);
   //   let uploaded = 0;
@@ -35,12 +36,24 @@ export class AddSong extends Component {
   //     console.log(`Uploading... ${pct.toFixed(2)}% complete`);
   //   };
 
+  //   // check if we already displayed a toast
+  //   // if (toastId.current === null) {
+  //   //   toastId.current = toast("Upload in Progress", {
+  //   //     progress: uploaded,
+  //   //   });
+  //   // } else {
+  //   //   toast.update(toastId.current, {
+  //   //     progress: uploaded,
+  //   //   });
+  //   // }
+  //   // if (uploaded == 100) toast.done(toastId.current);
+
   //   // makeStorageClient returns an authorized Web3.Storage client instance
-  //   const client = makeStorageClient();
+  //   // const client = makeStorageClient();
 
   //   // client.put will invoke our callbacks during the upload
   //   // and return the root cid when the upload completes
-  //   return client.put(files, { onRootCidReady, onStoredChunk });
+  //   return this.props.web3storage.put(files, { onRootCidReady, onStoredChunk });
   // };
 
   onSubmitClick = (event) => {
@@ -66,6 +79,9 @@ export class AddSong extends Component {
               this.setState({ loading: false });
               console.log(this.state);
               window.location.reload();
+            })
+            .catch((err) => {
+              toast.error("Internal error");
             });
         });
       });
@@ -74,9 +90,10 @@ export class AddSong extends Component {
     }
   };
   render() {
+    if (this.state.loading) return "Processing";
     return (
       <form className="form-group" onSubmit={this.onSubmitClick}>
-        <h2>Publish song</h2>
+        <h2>Publish a song</h2>
         <div className="mb-3">
           <input
             type="text"
@@ -114,11 +131,11 @@ export class AddSong extends Component {
           />
         </div>
 
+        {/* <button type="button" className="btn btn-primary"> */}
         <label htmlFor="upload" className="mb-3">
-          {/* <button type="button" className="btn btn-dark"> */}
           Upload
-          {/* </button> */}
         </label>
+        {/* </button> */}
         <input
           type="file"
           accept="audio/*"
@@ -128,7 +145,7 @@ export class AddSong extends Component {
           onChange={this.captureFile}
         ></input>
         <div className="mb-3">
-          <button type="submit" className="btn btn-light">
+          <button type="submit" className="btn btn-success">
             Publish
           </button>
         </div>

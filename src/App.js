@@ -87,7 +87,7 @@ export class App extends Component {
           });
       if (this.state.choice === "2")
         await contractInstance
-          .addNewAudience(this.state.username, { from: this.state.account })
+          .addNewListener(this.state.username, { from: this.state.account })
           .then(() => {
             console.log("register listener", this.state.account);
             this.loginUser();
