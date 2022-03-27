@@ -4,9 +4,8 @@ import Offline from "./components/Offline";
 import Loading from "./components/Loading";
 import artwork from "./assets/knack.png";
 import contractMeta from "./contracts/Knack.json";
-import { create } from "ipfs-http-client";
 import Web3 from "web3";
-// import { Web3Storage } from "web3.storage";
+import { Web3Storage } from "web3.storage";
 import contract from "@truffle/contract";
 import { toast } from "react-toastify";
 import Listener from "./components/Listener";
@@ -33,34 +32,25 @@ export class App extends Component {
   }
 
   componentDidMount() {
-    this.loadBlockchain().then(() => toast("Blockchain loaded"));
-    // this.loadIPFS().then(() => toast("loaded IPFS"));
-    // this.loadWeb3Storage().then(() => toast("Loaded web3.storage"));
-    this.loginUser().then(() => console.log("__LOGIN__"));
-  }
-
-  async loadIPFS() {
-    const connection = create({
-      host: "ipfs.infura.io",
-      port: "5001",
-      protocol: "https",
-    });
-    this.setState({ ipfs: connection });
+    this.loadBlockchain().then(() => toast.success("Blockchain loaded"));
+    this.loadWeb3Storage().then(() => toast.success("Loaded Web3.Storage"));
+    this.loginUser().then(() => console.log("loginUser"));
   }
 
   async loadBlockchain() {
-    const accounts = await this.web3.eth.getAccounts();
+    const accounts = await this.web3.eth.requestAccounts();
+    console.log(accounts);
     this.setState({ account: accounts[0] });
   }
 
-  // makeStorageClient = () => {
-  //   return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
-  // };
+  makeStorageClient = () => {
+    return new Web3Storage({ token: process.env.REACT_APP_WEB3STORAGE_TOKEN });
+  };
 
-  // async loadWeb3Storage() {
-  //   const connection = this.makeStorageClient();
-  //   this.setState({ web3storage: connection });
-  // }
+  async loadWeb3Storage() {
+    const connection = this.makeStorageClient();
+    this.setState({ web3storage: connection });
+  }
 
   loginUser = async () => {
     let val = "0";
@@ -72,25 +62,33 @@ export class App extends Component {
   };
 
   registerUser = async (e) => {
-    // e.preventDefault();
-    // toast("Registering");
-    // this.setState({ loading: true }, async () => {
-    const contractInstance = await this.contract.deployed();
-    if (this.state.choice === "1")
-      await contractInstance
-        .addNewArtist(this.state.username, { from: this.state.account })
-        .then(() => this.loginUser());
-    if (this.state.choice === "2")
-      await contractInstance
-        .addNewAudience(this.state.username, { from: this.state.account })
-        .then(() => this.loginUser());
-    // });
+    e.preventDefault();
+    toast.info("Registering");
+    this.setState({ loading: true }, async () => {
+      console.log("register requested", this.state.account);
+      const contractInstance = await this.contract.deployed();
+      if (this.state.choice === "1")
+        await contractInstance
+          .addNewArtist(this.state.username, { from: this.state.account })
+          .then(() => {
+            console.log("register artist", this.state.account);
+            this.loginUser();
+          });
+      if (this.state.choice === "2")
+        await contractInstance
+          .addNewAudience(this.state.username, { from: this.state.account })
+          .then(() => {
+            console.log("register listener", this.state.account);
+            this.loginUser();
+          });
+    });
   };
 
   render() {
     if (!navigator.onLine) {
       return <Offline />;
     }
+    // if (true) {
     if (this.state.loading) {
       return <Loading />;
     }
@@ -118,6 +116,19 @@ export class App extends Component {
                   this.setState({ username: evt.target.value })
                 }
               />
+            </div>
+            <div className="mb-3">
+              <select
+                name="choice"
+                id="choice"
+                className="form-select"
+                onChange={(e) => this.setState({ choice: e.target.value })}
+              >
+                <option selected value="1">
+                  Artist
+                </option>
+                <option value="2">Listener</option>
+              </select>
             </div>
             <div className="mb-3 d-flex justify-content-between">
               <button className="btn btn-dark">Register</button>
