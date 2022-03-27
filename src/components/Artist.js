@@ -5,17 +5,21 @@ import AddSong from "./AddSong";
 import Player from "./Player";
 import SongDisplay from "./SongDisplay";
 import "./Artist.scss";
+import Web3 from "web3";
 
 export class Artist extends Component {
   constructor(props) {
     super(props);
-
+    this.web3 = new Web3(
+      Web3.givenProvider || process.env.REACT_APP_GANACHECLI
+    );
     this.state = {
       name: "",
       artistID: "",
       popularity: 0,
       songIDs: [],
       songs: [],
+      query: "",
       form: false,
     };
   }
@@ -76,7 +80,29 @@ export class Artist extends Component {
             <p>analytics</p>
           </div> */}
           <div className="col">
-            <p>search</p>
+            <input
+              type="search"
+              name="query"
+              id="query"
+              className="form-control w-50 text-center"
+              placeholder="Search a published song"
+              onChange={(e) => this.setState({ query: e.target.value })}
+            />
+
+            {this.state.songs
+              .filter((song) => {
+                let name = song.name.toLowerCase();
+                let query = this.state.query.toLowerCase();
+                return name.includes(query);
+              })
+              .map((song) => (
+                <div className="song" key={song.hash}>
+                  <p>{song.name}</p>
+                  <p>{song.genre}</p>
+                  <p>{this.web3.utils.fromWei(song.cost, "milliether")}</p>
+                  <p>{song.timesPurchased}</p>
+                </div>
+              ))}
           </div>
           <div className="col-3">
             <AddSong
