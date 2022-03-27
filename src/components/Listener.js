@@ -26,6 +26,20 @@ export class Listener extends Component {
     };
   }
 
+  buySong = async (id, cost) => {
+    const contractInstance = await this.props.contract.deployed();
+    await contractInstance.buySong(id, {
+      from: this.props.account,
+      value: cost,
+    });
+  };
+
+  playAudio = (url) => {
+    // let audioTag = <audio src={url} autoplay></audio>;
+    window.open(url, "_blank");
+    toast.success("Audio loaded");
+  };
+
   componentDidMount() {
     this.loadStore().then(() => {
       this.loadListenerDetails().then(() => {
@@ -128,7 +142,18 @@ export class Listener extends Component {
           <header className="d-flex justify-content-between align-items-center">
             <h1>Knack</h1>
             <p>
-              <b>View: </b>
+              <b
+                className="btn btn-link"
+                onClick={() => {
+                  if (this.state.view === "Library") {
+                    this.setState({ view: "Store" });
+                  } else {
+                    this.setState({ view: "Library" });
+                  }
+                }}
+              >
+                View:{" "}
+              </b>
               {this.state.view === "Library" ? "Library" : "Store"}
             </p>
             <p>
@@ -228,7 +253,8 @@ export class Listener extends Component {
                           <button
                             type="button"
                             onClick={() => {
-                              console.log("buy");
+                              this.buySong(song.songID, song.cost);
+                              console.log(song.songID);
                             }}
                             class="btn btn-primary"
                           >
@@ -242,9 +268,10 @@ export class Listener extends Component {
             </div>
             <form>
               <div>
-                <h3>Sponsor Artist</h3>
+                <h3 className="mb-3">Sponsor Artist</h3>
                 <input
                   type="text"
+                  className="form-control mb-3"
                   placeholder="Artist Username"
                   value={this.state.supportArtistUsername}
                   required
@@ -254,7 +281,8 @@ export class Listener extends Component {
                 />
                 <input
                   type="text"
-                  placeholder="Amount"
+                  className="form-control mb-3"
+                  placeholder="Amount in mETH"
                   value={this.state.donation}
                   required
                   onChange={(x) => {
@@ -265,6 +293,7 @@ export class Listener extends Component {
                   type="submit"
                   onClick={this.onSubmitClick}
                   value="Donate"
+                  className="btn btn-success"
                 />
               </div>
             </form>
@@ -283,41 +312,6 @@ export class Listener extends Component {
               {this.state.playing ? "Pause" : "Play"}
             </button>
           </footer>
-
-          <div>
-            <div>
-              <h3>Library</h3>
-              {this.state.library.map((item, i) => (
-                <SongDisplay
-                  type={"listener"}
-                  name={item.name}
-                  artist={item.artist}
-                  genre={item.genre}
-                  hash={item.hash}
-                  songID={item.songID}
-                  key={i}
-                />
-              ))}
-            </div>
-            <div>
-              <h3>Store</h3>
-              {this.state.store.map((item, i) => (
-                <SongDisplay
-                  contract={this.props.contract}
-                  ipfs={this.props.ipfs}
-                  account={this.props.account}
-                  type={"shop"}
-                  name={item.name}
-                  artist={item.artist}
-                  genre={item.genre}
-                  cost={item.cost}
-                  hash={item.hash}
-                  songID={item.songID}
-                  key={i}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       );
     }
